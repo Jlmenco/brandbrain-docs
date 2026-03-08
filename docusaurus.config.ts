@@ -11,10 +11,10 @@ const config: Config = {
     v4: true,
   },
 
-  url: 'https://julianomenezes.github.io',
+  url: 'https://jlmenco.github.io',
   baseUrl: '/brandbrain-docs/',
 
-  organizationName: 'julianomenezes',
+  organizationName: 'Jlmenco',
   projectName: 'brandbrain-docs',
 
   onBrokenLinks: 'warn',
@@ -54,7 +54,7 @@ const config: Config = {
           label: 'Documentacao',
         },
         {
-          href: 'https://github.com/julianomenezes',
+          href: 'https://github.com/Jlmenco',
           label: 'GitHub',
           position: 'right',
         },

@@ -46,6 +46,10 @@ const config: Config = {
     },
     navbar: {
       title: 'Brand Brain',
+      logo: {
+        alt: 'Brand Brain Logo',
+        src: 'img/logo.svg',
+      },
       items: [
         {
           type: 'docSidebar',

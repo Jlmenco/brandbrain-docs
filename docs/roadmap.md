@@ -56,7 +56,7 @@ Ponte entre o MVP e a versao com IA real.
 - [x] **i18n**: Sistema de internacionalizacao (pt-BR, en-US, es)
 - [x] **Testes E2E**: 32 novos testes (total: 45 E2E)
 - [x] **Deploy Staging**: compose.staging.yml + script + GitHub Actions
-- [ ] **Integracao LLM real**: Substituir mock provider por OpenAI (GPT-4o)
+- [x] **Integracao LLM real**: AIGateway com suporte a OpenAI (GPT-4o-mini) e Anthropic (Claude Haiku)
 - [ ] **Providers reais**: Integracao com APIs do LinkedIn, Instagram, TikTok, Twitter, YouTube
 
 ---

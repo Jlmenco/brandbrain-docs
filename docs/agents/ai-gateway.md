@@ -20,9 +20,21 @@ Centralizar todas as chamadas de IA em um unico ponto de controle, oferecendo:
 O provedor padrao e configurado via variavel de ambiente:
 
 ```bash
-AI_DEFAULT_PROVIDER=mock    # Para desenvolvimento e testes
-AI_DEFAULT_PROVIDER=openai  # Para producao com OpenAI
+AI_DEFAULT_PROVIDER=mock       # Para desenvolvimento e testes
+AI_DEFAULT_PROVIDER=openai     # Para producao com OpenAI
+AI_DEFAULT_PROVIDER=anthropic  # Para producao com Anthropic (Claude)
 ```
+
+### Modelo Customizado
+
+Por padrao, cada provedor usa seu modelo mais custo-eficiente. Para sobrescrever:
+
+```bash
+AI_MODEL=gpt-4o              # Sobrescreve o modelo padrao do OpenAI
+AI_MODEL=claude-sonnet-4-5-20241022  # Sobrescreve o modelo padrao do Anthropic
+```
+
+Se `AI_MODEL` estiver vazio, o gateway usa o modelo padrao do provedor configurado.
 
 ## Componentes
 
@@ -45,19 +57,23 @@ class LLMAdapter:
 
 **Implementacoes atuais:**
 
-| Provedor         | Classe            | Descricao                                            |
-|------------------|-------------------|------------------------------------------------------|
-| `mock`           | `MockProvider`    | Retorna respostas pre-definidas — usado em dev/testes |
-| `openai`         | `OpenAIProvider`  | Integra com a API da OpenAI (GPT + Embeddings)       |
+| Provedor         | Classe              | Descricao                                            |
+|------------------|----------------------|------------------------------------------------------|
+| `mock`           | `MockProvider`      | Retorna respostas pre-definidas — usado em dev/testes |
+| `openai`         | `OpenAIProvider`    | Integra com a API da OpenAI (GPT + Embeddings)       |
+| `anthropic`      | `AnthropicProvider` | Integra com a API da Anthropic (Claude)              |
 
 ### 2. Model Registry
 
 Registro centralizado dos modelos disponiveis e suas configuracoes:
 
-| Funcao          | Modelo                     | Dimensoes | Provedor |
-|-----------------|----------------------------|-----------|----------|
-| Chat/Geracao    | gpt-4o (ou mock)           | —         | OpenAI   |
-| Embeddings      | text-embedding-3-small     | 1536      | OpenAI   |
+| Funcao          | Modelo                     | Dimensoes | Provedor  | Padrao? |
+|-----------------|----------------------------|-----------|-----------|---------|
+| Chat/Geracao    | gpt-4o-mini                | —         | OpenAI    | Sim     |
+| Chat/Geracao    | claude-haiku-4-5-20251001  | —         | Anthropic | Sim     |
+| Embeddings      | text-embedding-3-small     | 1536      | OpenAI    | Sim     |
+
+> **Nota:** Embeddings continuam exclusivamente via OpenAI, independente do provedor de geracao de texto. A Anthropic nao oferece modelos de embedding.
 
 ### 3. Policy Engine
 
@@ -75,7 +91,7 @@ Registra todas as interacoes com os provedores de IA para auditoria e debugging:
 | Campo           | Descricao                                   |
 |-----------------|---------------------------------------------|
 | `timestamp`     | Data/hora da chamada                        |
-| `provider`      | Provedor utilizado (mock/openai)            |
+| `provider`      | Provedor utilizado (mock/openai/anthropic)  |
 | `model`         | Modelo especifico utilizado                 |
 | `prompt`        | Prompt enviado (truncado se necessario)     |
 | `response`      | Resposta recebida (truncada se necessario)  |
@@ -172,22 +188,44 @@ Fallback: tenta provedor secundario
 Se todos falharem: retorna erro com detalhes
 ```
 
+## Implementacao do Provider Anthropic
+
+O provider Anthropic usa o SDK oficial `anthropic` com `AsyncAnthropic`:
+
+```python
+from anthropic import AsyncAnthropic
+
+# Inicializacao
+client = AsyncAnthropic(api_key=settings.ANTHROPIC_API_KEY)
+
+# Geracao de texto
+response = await client.messages.create(
+    model="claude-haiku-4-5-20251001",
+    system="Voce e um especialista em marketing...",  # separado das messages
+    messages=[{"role": "user", "content": prompt}],
+    temperature=0.7,
+    max_tokens=1000,
+)
+result = response.content[0].text
+```
+
+**Diferencas chave entre OpenAI e Anthropic:**
+
+| Aspecto          | OpenAI                              | Anthropic                         |
+|------------------|-------------------------------------|-----------------------------------|
+| System prompt    | Mensagem com `role: "system"`       | Parametro `system` separado       |
+| Resposta         | `response.choices[0].message.content` | `response.content[0].text`     |
+| Client async     | `AsyncOpenAI`                       | `AsyncAnthropic`                  |
+| Embeddings       | Suportado                           | Nao suportado (usar OpenAI)       |
+
 ## Adicionando um Novo Provedor
 
 Para adicionar suporte a um novo provedor de LLM:
 
-1. Crie uma nova classe que implemente a interface `LLMAdapter`
-2. Registre o provedor no `Model Registry`
-3. Configure a variavel `AI_DEFAULT_PROVIDER` com o identificador do novo provedor
-4. Adicione regras de fallback no circuit breaker, se desejado
-
-```python
-class AnthropicProvider(LLMAdapter):
-    async def generate(self, prompt: str, **kwargs) -> str:
-        # Implementacao com a API da Anthropic
-        ...
-
-    async def embed(self, text: str) -> list[float]:
-        # Anthropic nao oferece embeddings — usar fallback
-        raise NotImplementedError("Use OpenAI para embeddings")
-```
+1. Adicione o SDK ao `requirements.txt`
+2. Importe o client com `try/except ImportError` para fallback gracioso
+3. Adicione o modelo padrao no dict `DEFAULT_MODELS`
+4. Adicione a logica de inicializacao no `__init__` do `AIGateway`
+5. Adicione o caso no metodo `generate()`
+6. Configure a variavel `AI_DEFAULT_PROVIDER` com o identificador do novo provedor
+7. Adicione testes unitarios com mock do SDK

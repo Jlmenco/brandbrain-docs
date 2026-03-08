@@ -32,6 +32,9 @@ Fundacao completa do sistema com todas as funcionalidades essenciais.
 - [x] **Testes**: 127 testes API + 22 testes Worker + 13 testes E2E (Playwright)
 - [x] **Migrations**: Alembic com schema versionado (23 tabelas)
 - [x] **UX Polish**: Toast, loading skeletons, sidebar responsiva, dark mode
+- [x] **Repo Split**: Separacao em 4 repos independentes (api, web, mobile, docs)
+- [x] **CI/CD**: GitHub Actions em todos os repos
+- [x] **Documentacao**: Site Docusaurus com 25+ paginas no GitHub Pages
 
 ---
 
@@ -40,9 +43,21 @@ Fundacao completa do sistema com todas as funcionalidades essenciais.
 Ponte entre o MVP e a versao com IA real.
 
 - [x] **RAG + Embeddings**: pgvector, BrandKitEmbedding, auto-embed, prompt builder
+- [x] **Empty States**: Componente reutilizavel em todas as listagens
+- [x] **Edit Content Dialog**: Edicao inline de conteudos
+- [x] **Responsividade**: Tabelas com scroll horizontal em mobile
+- [x] **Confirmacao de Acoes**: ConfirmDialog para acoes destrutivas
+- [x] **Pagina de Configuracoes**: Perfil, senha, tema, idioma, webhooks, info sistema
+- [x] **Filtros Avancados**: Filtro por influenciador e date range no conteudos
+- [x] **Export CSV/PDF**: Exportacao de dados em listagens
+- [x] **Command Palette (Cmd+K)**: Busca global com navegacao por teclado
+- [x] **Onboarding Wizard**: 3 passos para novos usuarios
+- [x] **Webhook Settings**: Configuracao de webhooks (Slack/Discord/Teams)
+- [x] **i18n**: Sistema de internacionalizacao (pt-BR, en-US, es)
+- [x] **Testes E2E**: 32 novos testes (total: 45 E2E)
+- [x] **Deploy Staging**: compose.staging.yml + script + GitHub Actions
 - [ ] **Integracao LLM real**: Substituir mock provider por OpenAI (GPT-4o)
 - [ ] **Providers reais**: Integracao com APIs do LinkedIn, Instagram, TikTok, Twitter, YouTube
-- [ ] **Deploy staging**: Ambiente de homologacao com dados de teste
 
 ---
 
@@ -55,7 +70,7 @@ Funcionalidades avancadas para escalar a operacao.
 - [ ] **Templates de Conteudo**: Biblioteca de templates reutilizaveis por nicho e plataforma
 - [ ] **A/B Testing**: Gerar variacoes de conteudo e medir qual performa melhor
 - [ ] **Integracao CRM**: Conexao com ferramentas externas (HubSpot, Pipedrive) para sincronizar leads
-- [ ] **Webhook de Eventos**: Notificacoes externas para sistemas terceiros
+- [ ] **Webhook de Eventos**: Backend de webhooks para notificacoes externas em tempo real
 
 ---
 

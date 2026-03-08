@@ -57,6 +57,7 @@ Ponte entre o MVP e a versao com IA real.
 - [x] **Testes E2E**: 32 novos testes (total: 45 E2E)
 - [x] **Deploy Staging**: compose.staging.yml + script + GitHub Actions
 - [x] **Integracao LLM real**: AIGateway com suporte a OpenAI (GPT-4o-mini) e Anthropic (Claude Haiku)
+- [x] **AWS Infrastructure**: Terraform (ECS Fargate + NLB porta 8443 + CloudFront+S3 + Lambda Scheduler + Secrets Manager)
 - [ ] **Providers reais**: Integracao com APIs do LinkedIn, Instagram, TikTok, Twitter, YouTube
 
 ---

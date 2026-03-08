@@ -43,6 +43,9 @@ const sidebars: SidebarsConfig = {
         'features/analytics',
         'features/notifications',
         'features/rag',
+        'features/ui-ux',
+        'features/settings',
+        'features/onboarding',
       ],
     },
     {
